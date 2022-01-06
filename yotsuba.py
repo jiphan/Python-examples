@@ -2,7 +2,8 @@
 import re
 import time
 import requests
-import datetime
+import yaml
+from operator import itemgetter
 
 
 def escapeHtml(unsafe):
@@ -22,9 +23,17 @@ def escapeHtml(unsafe):
     return safe
 
 
+def read_yaml(path):
+    with open(path, "r") as f:
+        return itemgetter(
+            'board',
+            'threadRegex',
+            'postRegex')(yaml.safe_load(f))
+
+
 def main():
-    board = 'po'
-    threadRegex = 'touhou papercraft'
+    board, threadRegex, postRegex = read_yaml('yotsuba.yaml')
+    postSet = set()
 
     def getThreads():
         threadList = []
@@ -37,9 +46,6 @@ def main():
                 if (re.search(threadRegex, thread.get('com', ''))):
                     threadList.append(thread['no'])
         return threadList
-
-    postSet = set()
-    postRegex = '(?i)mega.nz'
 
     def getPost(thread):
         postList = []
@@ -64,17 +70,16 @@ def main():
         # print(list(map(lambda i: i['com'], postList)))
 
         if len(postList) > 0:
-            print('\n' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            print('\n' + time.strftime("%H:%M:%S", time.localtime()))
             for post in postList:
                 if re.search(threadRegex, post['com']):
                     print('\n{}: {}'.format(post['no'], post.get('sub', '')))
                 else:
                     print('{}: {}'.format(post['no'], post['com']))
 
-    timer = 5 * 60
     while True:
         scan()
-        time.sleep(timer)
+        time.sleep(5 * 60)
 
 
 if __name__ == '__main__':
