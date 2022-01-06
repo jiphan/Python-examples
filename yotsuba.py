@@ -23,8 +23,8 @@ def escapeHtml(unsafe):
 
 
 def main():
-    board = 'vt'
-    threadRegex = 'ks1mraas71v3fjf1'
+    board = 'po'
+    threadRegex = 'touhou papercraft'
 
     def getThreads():
         threadList = []
@@ -39,7 +39,7 @@ def main():
         return threadList
 
     postSet = set()
-    postRegex = '(?i)pom'
+    postRegex = '(?i)mega.nz'
 
     def getPost(thread):
         postList = []
@@ -67,7 +67,7 @@ def main():
             print('\n' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             for post in postList:
                 if re.search(threadRegex, post['com']):
-                    print('\n{}: {}'.format(post['no'], post['sub']))
+                    print('\n{}: {}'.format(post['no'], post.get('sub', '')))
                 else:
                     print('{}: {}'.format(post['no'], post['com']))
 
