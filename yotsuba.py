@@ -47,7 +47,7 @@ def main():
                     threadList.append(thread['no'])
         return threadList
 
-    def getPost(thread):
+    def getPosts(thread):
         postList = []
         res = requests.get(
             'https://a.4cdn.org/{}/thread/{}.json'
@@ -66,7 +66,7 @@ def main():
     def scan():
         postList = []
         for thread in getThreads():
-            postList += getPost(thread)
+            postList += getPosts(thread)
         # print(list(map(lambda i: i['com'], postList)))
 
         if len(postList) > 0:
