@@ -67,8 +67,45 @@ def solution6(X, A):
     return ans
 
 
+def solution7(N, S):
+    open = [[1 for i in range(3)] for i in range(N)]
+
+    for i in S.split():
+        row = int(i[:-1])
+        seat = i[-1]
+
+        rowIndex = -1
+        semiClosed = False
+        if seat in ('A', 'B', 'C'):
+            rowIndex = 0
+        elif seat in ('E', 'F'):
+            rowIndex = 1
+        elif seat in ('H', 'J', 'K'):
+            rowIndex = 2
+        elif seat in ('D', 'G'):  # middle aisle logic
+            rowIndex = 1
+        else:
+            print('seat out of range')
+
+        if open[row - 1][rowIndex] > 0:
+            if semiClosed:
+                open[row - 1][rowIndex] -= 0.5
+            else:
+                open[row - 1][rowIndex] = 0
+
+    openSections = 0
+    for i in open:
+        for j in i:
+            if j > 0:
+                openSections += 1
+
+    return openSections
+
+
 def main():
-    print(solution4([]))
+    print(solution7(2, '1A 2D 1C'))
+    print(solution7(3, '1A 2F 1C 3D'))
+    print(solution7(1, ''))
 
 
 if __name__ == '__main__':
