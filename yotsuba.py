@@ -31,7 +31,13 @@ def read_yaml(path):
             'postRegex')(yaml.safe_load(f))
 
 
-def main():
+def getGeneric(url):
+    contentList = []
+    res = requests.get(url)
+    print(res.text)
+
+
+def yotsubaScan():
     board, threadRegex, postRegex = read_yaml('yotsuba.yaml')
     postSet = set()
 
@@ -83,4 +89,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    yotsubaScan()
+    # thread = '16907273'
+    # getGeneric('https://archive.wakarimasen.moe/vt/thread/{}/'.format(thread))
