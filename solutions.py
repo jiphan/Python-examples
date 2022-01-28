@@ -102,11 +102,53 @@ def solution7(N, S):
     return openSections
 
 
-def main():
-    print(solution7(2, '1A 2D 1C'))
-    print(solution7(3, '1A 2F 1C 3D'))
-    print(solution7(1, ''))
+# pure recursion
+def fibb1(N):
+    if N == 1 or N == 2:
+        return 1
+    else:
+        return fibb1(N - 1) + fibb1(N - 2)  # subproblem
+
+
+# memoization
+def fibb2(N):
+    dp = [0] * (N + 1)
+
+    def memo(N):
+        if dp[N]:
+            return dp[N]
+        elif N == 1 or 2:
+            result = 1
+        else:
+            result = memo(N - 1) + memo(N - 2)  # subproblem
+        dp[N] = result  # memoize
+        # print(dp)
+        return dp[N]
+
+    return memo(N)
+
+
+# bottom up
+def fibb3(N):
+    dp = [0] * (N + 1)
+    dp[1] = 1
+    dp[2] = 1
+
+    for i in range(3, N + 1):
+        dp[i] = dp[i - 1] + dp[i - 2]  # subproblem
+
+    return dp[N]
+
+
+# BST core
+def treeSum(root):
+    if root is None:
+        return 0
+    else:
+        left = treeSum(root.left)
+        right = treeSum(root.right)
+        return root.data + left + right
 
 
 if __name__ == '__main__':
-    main()
+    print(fibb2(2))
