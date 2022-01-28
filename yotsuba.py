@@ -3,6 +3,7 @@ import re
 import time
 import requests
 import yaml
+import datetime
 from operator import itemgetter
 
 
@@ -37,7 +38,7 @@ def getGeneric(url):
     print(res.text)
 
 
-def yotsubaScan():
+def postScan():
     board, threadRegex, postRegex = read_yaml('yotsuba.yaml')
     postSet = set()
 
@@ -88,7 +89,67 @@ def yotsubaScan():
         time.sleep(5 * 60)
 
 
+def catalogScan():
+    board, threadRegex, postRegex = read_yaml('config.yaml')
+    board = 'po'
+
+    def getThreads():
+        threadList = []
+        res = requests.get(
+            'https://a.4cdn.org/{}/catalog.json'
+            .format(board)
+        )
+        print('/{}/ status:'.format(board), res.status_code)
+        for page in res.json():
+            for thread in page['threads']:
+                try:
+                    bump = thread['last_replies'][-1]['time']
+                    if thread['bumplimit']:
+                        continue
+                except:
+                    continue
+
+                threadList.append({
+                    'no': thread['no'],
+                    'time': thread['time'],
+                    'page': page['page'],
+                    'bump': bump
+                })
+        return threadList
+
+    def getLastBump(threads):
+        now = datetime.datetime.now().replace(microsecond=0)
+        curDiff = datetime.timedelta(0)
+        arr = []
+        for i in threads:
+            last = datetime.datetime.fromtimestamp(i['bump'])
+            diff = now - last
+            relDiff = diff - curDiff
+            curDiff = diff
+            # print(i['page'], i['no'], '\t', diff, '\t', relDiff)
+            arr.append(diff)
+        return arr
+
+    def bucketLastBumps(lastBumps):
+        timeranges = [1, 5, 10, 15, 30, 60, 120, 240, 480, 960, 1920, 3840]
+        count = {}
+        for i in lastBumps:
+            for j in timeranges:
+                if i < datetime.timedelta(0, j * 60):
+                    label = 'under {} hrs'.format(
+                        j // 60) if j >= 60 * 2 else 'under {} min'.format(j)
+                    if label not in count:
+                        count[label] = 1
+                    else:
+                        count[label] += 1
+                    break
+
+    arr = getLastBump(getThreads())
+    count = bucketLastBumps(arr)
+
+    [print(k, ':', v) for k, v in count.items()]
+
+
 if __name__ == '__main__':
-    yotsubaScan()
-    # thread = '16907273'
-    # getGeneric('https://archive.wakarimasen.moe/vt/thread/{}/'.format(thread))
+    # postScan()
+    catalogScan()
