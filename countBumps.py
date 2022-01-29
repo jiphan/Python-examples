@@ -6,15 +6,14 @@ import config
 
 def main():
     args = config.read_yaml('config.yaml')
-    board = args.board
 
     def getThreads():
         threadList = []
         res = requests.get(
             'https://a.4cdn.org/{}/catalog.json'
-            .format(board)
+            .format(args.board)
         )
-        print('/{}/ status:'.format(board), res.status_code)
+        print('/{}/ status:'.format(args.board), res.status_code)
         if res.status_code != 200:
             return threadList
         for page in res.json():
