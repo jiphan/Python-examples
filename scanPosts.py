@@ -70,7 +70,7 @@ def main():
 
     while True:
         scan()
-        time.sleep(5 * 60)
+        time.sleep(int(args.refresh) * 60)
 
 
 if __name__ == '__main__':

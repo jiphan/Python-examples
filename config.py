@@ -7,6 +7,7 @@ parser.add_argument("board", nargs='?', default=None)
 parser.add_argument("--recent")
 parser.add_argument("--threadRegex")
 parser.add_argument("--postRegex")
+parser.add_argument("--refresh")
 parser.add_argument("idk", nargs='*', default=None)
 args = parser.parse_args()
 
@@ -17,6 +18,7 @@ def read_yaml(path):
         args.board = args.board or result['board']
         args.threadRegex = args.threadRegex or result['threadRegex']
         args.postRegex = args.postRegex or result['postRegex']
+        args.refresh = args.refresh or result['refresh']
         return args
 
 
