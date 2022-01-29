@@ -5,8 +5,8 @@ import config
 
 
 def main():
-    c = config.read_yaml('config.yaml')
-    board = c['board']
+    args = config.read_yaml('config.yaml')
+    board = args.board
 
     def getThreads():
         threadList = []
@@ -66,14 +66,11 @@ def main():
         return count
 
     arr = getLastBump(getThreads())
-    [print('{}: {}'.format(k, v)) for k, v in bucketLastBumps(
-        arr).items()]
+    [print('{}: {}'.format(k, v)) for k, v in bucketLastBumps(arr).items()]
 
-    try:
-        recent = int(c['recent'])
+    if args.recent:
+        recent = int(args.recent)
         [print(i) for i in arr[-recent:]]
-    except:
-        pass
 
 
 if __name__ == '__main__':

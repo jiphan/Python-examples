@@ -23,19 +23,18 @@ def escapeHtml(unsafe):
 
 
 def main():
-    c = config.read_yaml('config.yaml')
-    board, threadRegex, postRegex = c['board'], c['threadRegex'], c['postRegex']
+    args = config.read_yaml('config.yaml')
     postSet = set()
 
     def getThreads():
         threadList = []
         res = requests.get(
             'https://a.4cdn.org/{}/catalog.json'
-            .format(board)
+            .format(args.board)
         )
         for page in res.json():
             for thread in page['threads']:
-                if (re.search(threadRegex, thread.get('com', ''))):
+                if (re.search(args.threadRegex, thread.get('com', ''))):
                     threadList.append(thread['no'])
         return threadList
 
@@ -43,11 +42,11 @@ def main():
         postList = []
         res = requests.get(
             'https://a.4cdn.org/{}/thread/{}.json'
-            .format(board, thread)
+            .format(args.board, thread)
         )
         for post in res.json()['posts']:
             if (post['no'] not in postSet and re.search(
-                postRegex,
+                args.postRegex,
                 post.get('com', '')
             )):
                 postSet.add(post['no'])
@@ -64,7 +63,7 @@ def main():
         if len(postList) > 0:
             print('\n' + time.strftime("%H:%M:%S", time.localtime()))
             for post in postList:
-                if re.search(threadRegex, post['com']):
+                if re.search(args.threadRegex, post['com']):
                     print('\n{}: {}'.format(post['no'], post.get('sub', '')))
                 else:
                     print('{}: {}'.format(post['no'], post['com']))
