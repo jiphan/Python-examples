@@ -22,12 +22,6 @@ def escapeHtml(unsafe):
     return safe
 
 
-def getGeneric(url):
-    contentList = []
-    res = requests.get(url)
-    print(res.text)
-
-
 def main():
     c = config.read_yaml('config.yaml')
     board, threadRegex, postRegex = c['board'], c['threadRegex'], c['postRegex']
