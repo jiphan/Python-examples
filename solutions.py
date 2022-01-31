@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
-from typing import List
+from typing import List, Optional
+
+
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 
 class Codility:
@@ -195,6 +207,59 @@ class Leetcode:
             output[-i] *= cur
             cur *= nums[-i]
         return output
+
+    def findMin(self, nums: List[int]) -> int:
+        l, r = 0, len(nums) - 1
+        if nums[l] < nums[r]:
+            return nums[l]
+        while nums[l] > nums[r]:
+            mid = (l + r) // 2
+            if nums[mid] < nums[r]:
+                r = mid
+            else:
+                l = mid + 1
+        return nums[l]
+
+    def search(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+        while l < r:
+            # print(l, r)
+            mid = (l + r) // 2
+            if nums[mid] == target:
+                return mid
+            if nums[l] <= nums[mid]:
+                if nums[l] <= target <= nums[mid]:
+                    r = mid
+                else:
+                    l = mid + 1
+            else:
+                if nums[mid] <= target <= nums[r]:
+                    l = mid + 1
+                else:
+                    r = mid
+            # print(l, r)
+        return l if nums[l] == target else -1
+
+    def cloneGraph(self, node: 'Node') -> 'Node':
+        if not node:
+            return node
+        m = {node: Node(node.val)}
+        stack = [node]
+        while stack:
+            cur = stack.pop()
+            for n in cur.neighbors:
+                if not n in m:
+                    stack.append(n)
+                    m[n] = Node(n.val)
+                m[cur].neighbors.append(m[n])
+        return m[node]
+
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        cur = None
+        while head:
+            cur = ListNode(head.val, cur)
+            head = head.next
+        return cur
 
 
 if __name__ == '__main__':
