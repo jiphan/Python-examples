@@ -8,6 +8,7 @@ parser.add_argument("--recent")
 parser.add_argument("--threadRegex")
 parser.add_argument("--postRegex")
 parser.add_argument("--refresh")
+parser.add_argument("--bucket", dest='bucket', action='store_true')
 parser.add_argument("idk", nargs='*', default=None)
 args = parser.parse_args()
 

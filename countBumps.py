@@ -43,14 +43,14 @@ def main():
             diff = now - last
             relDiff = diff - curDiff
             curDiff = diff
-            arr.append(diff)
+            arr.append((diff, i['page']))
             # print(i['page'], i['no'], '\t', diff, '\t', relDiff)
         return arr
 
     def bucketLastBumps(lastBumps):
         timeranges = [1, 5, 10, 15, 30, 60, 120, 240, 480, 960, 1920, 3840]
         count = {}
-        for i in lastBumps:
+        for i, _ in lastBumps:
             for j in timeranges:
                 if i < datetime.timedelta(0, j * 60):
                     if j >= 60 * 2:
@@ -64,12 +64,25 @@ def main():
                     break
         return count
 
+    def pageRanges(lastBumps):
+        res = {}
+        for i, j in lastBumps:
+            if j not in res:
+                res[j] = i
+        return res
+
     arr = getLastBump(getThreads())
-    [print('{}: {}'.format(k, v)) for k, v in bucketLastBumps(arr).items()]
+
+    if args.bucket:
+        [print('{}: {}'.format(k, v)) for k, v in bucketLastBumps(arr).items()]
+    else:
+        pageMap = pageRanges(arr)
+        [print(i, str(pageMap[i])) for i in pageMap]
 
     if args.recent:
         recent = int(args.recent)
-        [print(i) for i in arr[-recent:]]
+        print('')
+        [print(i, j) for i, j in arr[-recent:]]
 
 
 if __name__ == '__main__':
