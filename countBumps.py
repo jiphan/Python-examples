@@ -62,6 +62,7 @@ def main():
         return count
 
     def pageRanges(lastBumps):
+        """ return map of first bump in each page """
         res = {}
         for i, j in lastBumps:
             if j not in res:
@@ -79,12 +80,22 @@ def main():
     if args.bucket:
         [print('{}: {}'.format(k, v)) for k, v in bucketLastBumps(arr).items()]
 
+    def inlinePrint(pageMap):
+        """print results of `pageRanges()` inline"""
+        res = '\t'.join(
+            convertTime(pageMap[x].seconds) for x in pageMap
+        )
+        if len(pageMap) == 10:
+            clean = convertTime(arr[-1][0].seconds)
+            res += '\t' + clean
+        return res
+
     if args.recent:
-        pageMap = pageRanges(arr)
-        [print(i, str(pageMap[i])) for i in pageMap]
+        print('\t'.join(str(x) for x in range(1, 12)))  # header
+        print(inlinePrint(pageRanges(arr)))
+        print()
 
         recent = int(args.recent)
-        print('')
         [print(i, j) for i, j in arr[-recent:]]
 
     if args.loop:
@@ -94,21 +105,14 @@ def main():
         print()
         last = ''
         while True:
-            pageMap = pageRanges(arr)
-            for i in pageMap:
-                clean = convertTime(pageMap[i].seconds)
-                print(clean, end='\t')
-            if len(pageMap) == 10:
-                clean = convertTime(arr[-1][0].seconds)
-                print(clean, end='*\t')
+            line = inlinePrint(pageRanges(getLastBump(getThreads())))
             timestamp = datetime.datetime.now().strftime('(%H:%M)')
             if timestamp[1:3] == last:
                 timestamp = ''
             else:
                 last = timestamp[1:3]
-            print(timestamp)
+            print(line + '\t' + timestamp)
             time.sleep(15 * 60)
-            arr = getLastBump(getThreads())
 
 
 if __name__ == '__main__':
