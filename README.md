@@ -1,10 +1,24 @@
 # Python-examples
 
+## config.py
+- handles command line args
+- pulls default flags from config.yaml
+
+## yotsuba.py
+- simple wrapper for basic api calls to yotsuba
+- pulls flags from config.py
+
+## calcActivity.py
+- calculates thread activity formatted as (posts / 15 min)
+- accepts backlinks for cross-thread calculation
+
+## count Bumps.py
+- board-level metrics
+- `---loop` displays the time since last bump for the top thread on each page
+- `--recent <n>` displays the time since last bump for last `n` threads
+- `--bucket` displays the count of threads, grouped by time since last bump
+
 ## scanPosts.py
-- Sends API request to catalog, thread endpoints
-- Returns posts matching thread and post regex
-- `--refresh` for scanning every `n` minutes
-## countBumps.py
-- Sends API request to catalog endpoint
-- Returns count of threads in timerange buckets
-- `--recent` for `time since last bump` for bottom `n` posts
+- comment-level filter
+- returns posts matching thread and post regex
+- `--refresh <n>` for scanning every `n` minutes
