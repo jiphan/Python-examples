@@ -84,14 +84,15 @@ def main():
         """print results of `pageRanges()` inline"""
         res = '\t'.join(
             convertTime(pageMap[x].seconds) for x in pageMap
+            # map(lambda x: convertTime(pageMap[x].seconds))
         )
         if len(pageMap) == 10:
             clean = convertTime(arr[-1][0].seconds)
             res += '\t' + clean
         return res
 
+    print('\t'.join(map(str, range(1, 12))))  # header
     if args.recent:
-        print('\t'.join(str(x) for x in range(1, 12)))  # header
         print(inlinePrint(pageRanges(arr)))
         print()
 
@@ -99,10 +100,6 @@ def main():
         [print(i, j) for i, j in arr[-recent:]]
 
     if args.loop:
-        # header
-        for i in range(1, 12):
-            print(i, end='\t')
-        print()
         last = ''
         while True:
             line = inlinePrint(pageRanges(getLastBump(getThreads())))
