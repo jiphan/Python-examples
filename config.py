@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import yaml
 import argparse
 
@@ -9,17 +8,18 @@ parser.add_argument("--threadRegex")
 parser.add_argument("--postRegex")
 parser.add_argument("--refresh")
 parser.add_argument("--bucket", dest='bucket', action='store_true')
+parser.add_argument("--loop", dest='loop', action='store_true')
 parser.add_argument("idk", nargs='*', default=None)
 args = parser.parse_args()
 
 
 def read_yaml(path):
     with open(path, "r") as f:
-        result = yaml.safe_load(f)
-        args.board = args.board or result['board']
-        args.threadRegex = args.threadRegex or result['threadRegex']
-        args.postRegex = args.postRegex or result['postRegex']
-        args.refresh = args.refresh or result['refresh']
+        default = yaml.safe_load(f)
+        args.board = args.board or default['board']
+        args.threadRegex = args.threadRegex or default['threadRegex']
+        args.postRegex = args.postRegex or default['postRegex']
+        args.refresh = args.refresh or default['refresh']
         return args
 
 
