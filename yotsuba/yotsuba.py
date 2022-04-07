@@ -1,7 +1,9 @@
 import re
 import requests
 import config
-args = config.read_yaml('config.yaml')
+import os
+script_dir = os.path.dirname(__file__)
+args = config.read_yaml(script_dir + '/config.yaml')
 
 
 def escapeHtml(unsafe):
@@ -36,6 +38,16 @@ def getCatalog():
     return threadList
 
 
+def getCatalogFull():
+    res = requests.get(
+        'https://a.4cdn.org/{}/catalog.json'
+        .format(args.board)
+    )
+    if res.status_code != 200:
+        return {}
+    return res.json()
+
+
 def getArchive():
     res = requests.get(
         'https://a.4cdn.org/{}/archive.json'
@@ -55,3 +67,7 @@ def getThread(thread):
     for post in res.json()['posts']:
         postList.append(post)
     return postList
+
+
+if __name__ == '__main__':
+    pass
