@@ -25,11 +25,23 @@ def lookup(tweets):
             tweet_fields=["created_at"],
             user_auth=True
         )
-
-        return [
-            list(map(lambda x: x.text, res.data)),
-            list(map(lambda x: x.url, res.includes['media']))
-        ]
+        # https://bit.ly/36aRBpA
+        media = {m["media_key"]: m for m in res.includes['media']}
+        user = {u['id']: u for u in res.includes['users']}
+        # print(user)
+        arr = {}
+        for t in res.data:
+            try:
+                mm = [media[m].url for m in t.data['attachments']['media_keys']]
+            except:
+                mm = []
+            arr[t.data['id']] = {
+                'text': t.data['text'],
+                'created_at': t.data['created_at'],
+                'user': user[int(t.data['author_id'])].username,
+                'media': mm
+            }
+        return arr
     except:
         traceback.print_exc()
         return []
@@ -57,8 +69,10 @@ def delete(tweet):
 
 
 def main():
-    tweets = [1326355021093498880, 1514110244578029569]
-    print(lookup(tweets))
+    tweets = [1326355021093498880, 1514110244578029569, 1512649822083465219]
+    res = lookup(tweets)
+    for i in res:
+        print(res[i]['media'])
     # t = send('test').data
     # delete(t['id'])
 
