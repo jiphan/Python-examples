@@ -15,6 +15,33 @@ client = tweepy.Client(
 )
 
 
+def parse_client(tweets):
+    # https://bit.ly/36aRBpA
+    media = {m["media_key"]: m for m in tweets.includes['media']}
+    user = {u['id']: u for u in tweets.includes['users']}
+    # print(user)
+
+    res = {}
+    for t in tweets.data:
+        try:
+            mm = [media[m].url for m in t.data['attachments']['media_keys']]
+        except:
+            mm = []
+        res[t.data['id']] = {
+            'text': t.data['text'],
+            'created_at': t.data['created_at'],
+            'user': user[int(t.data['author_id'])].username,
+            'media': mm
+        }
+
+    tweet_fallback = lookup_fallback(
+        [i for i in res if None in res[i]['media']])
+    for i in tweet_fallback:
+        res[i]['media'] = tweet_fallback[i]['media']
+
+    return res
+
+
 def lookup(tweets):
     try:
         res = client.get_tweets(
@@ -25,26 +52,34 @@ def lookup(tweets):
             tweet_fields=["created_at"],
             user_auth=True
         )
-        # https://bit.ly/36aRBpA
-        media = {m["media_key"]: m for m in res.includes['media']}
-        user = {u['id']: u for u in res.includes['users']}
-        # print(user)
-        arr = {}
-        for t in res.data:
-            try:
-                mm = [media[m].url for m in t.data['attachments']['media_keys']]
-            except:
-                mm = []
-            arr[t.data['id']] = {
-                'text': t.data['text'],
-                'created_at': t.data['created_at'],
-                'user': user[int(t.data['author_id'])].username,
-                'media': mm
-            }
-        return arr
     except:
         traceback.print_exc()
-        return []
+        res = []
+
+    return parse_client(res)
+
+
+def parse_api(tweets):
+    arr = {}
+    for t in tweets:
+        data = t._json
+        arr[data['id_str']] = {
+            'text': data['text'],
+            'created_at': data['created_at'],
+            'user': data['user']['screen_name'],
+            'media': data['extended_entities']['media'][0]['video_info']['variants'][2]['url']
+        }
+    return arr
+
+
+def lookup_fallback(tweets):
+    try:
+        res = api.lookup_statuses(tweets)
+    except:
+        traceback.print_exc()
+        res = []
+
+    return parse_api(res)
 
 
 def send(tweet):
@@ -69,10 +104,16 @@ def delete(tweet):
 
 
 def main():
-    tweets = [1326355021093498880, 1514110244578029569, 1512649822083465219]
+    tweets = [1326355021093498880, 1421626172094492678,
+              1505434915856338946, 1531720420478550022,
+              1533509004244176896]
     res = lookup(tweets)
+
+    print('results:')
     for i in res:
-        print(res[i]['media'])
+        # print(res[i])
+        print(i, res[i]['media'])
+
     # t = send('test').data
     # delete(t['id'])
 
