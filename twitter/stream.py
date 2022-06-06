@@ -1,6 +1,16 @@
 import tweepy
 import twitter
 import traceback
+import subprocess
+
+
+def local_dl(urls):
+    dl = '../aria2c.exe'
+    subprocess.run([
+        dl, urls,
+        '-d', '../dl',
+        '-q'
+    ])
 
 
 def parse_tweet(response):
@@ -38,6 +48,7 @@ class stream_parse(tweepy.StreamingClient):
         print(res['id'], res['user'], res['created_at'])
         print(res['text'])
         [print(i) for i in res['media']]
+        local_dl(' '.join(res['media']))
 
 
 def init(streaming_client):
