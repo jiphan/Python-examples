@@ -19,7 +19,6 @@ def parse_client(tweets):
     # https://bit.ly/36aRBpA
     media = {m["media_key"]: m for m in tweets.includes['media']}
     user = {u['id']: u for u in tweets.includes['users']}
-    # print(user)
 
     res = {}
     for t in tweets.data:
@@ -63,21 +62,29 @@ def parse_api(tweets):
     arr = {}
     for t in tweets:
         data = t._json
+        variants = data['extended_entities']['media'][0]['video_info']['variants']
+        url = variants[0]['url']
+        for v in variants:
+            if v.get('bitrate') == 2176000:
+                url = v['url']
+
         arr[data['id_str']] = {
             'text': data['text'],
             'created_at': data['created_at'],
             'user': data['user']['screen_name'],
-            'media': data['extended_entities']['media'][0]['video_info']['variants'][2]['url']
+            'media': url
         }
     return arr
 
 
 def lookup_fallback(tweets):
+    if len(tweets) == 0:
+        return {}
     try:
         res = api.lookup_statuses(tweets)
     except:
         traceback.print_exc()
-        res = []
+        return {}
 
     return parse_api(res)
 
@@ -104,9 +111,7 @@ def delete(tweet):
 
 
 def main():
-    tweets = [1326355021093498880, 1421626172094492678,
-              1505434915856338946, 1531720420478550022,
-              1533509004244176896]
+    tweets = [1533657639200010240]
     res = lookup(tweets)
 
     print('results:')
