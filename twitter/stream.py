@@ -7,6 +7,8 @@ script_dir = os.path.dirname(__file__)
 
 
 def local_dl(id, urls):
+    if len(urls) == 0:
+        return
     exec = '../../aria2c.exe'
     folder = '../../dl/'
 
@@ -103,5 +105,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    local_dl('test', ['https://pbs.twimg.com/media/FUq7eaEaAAANbWJ.jpg'])
+    main()
+    # local_dl('test', ['https://pbs.twimg.com/media/FUq7eaEaAAANbWJ.jpg'])
