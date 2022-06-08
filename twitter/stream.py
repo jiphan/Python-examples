@@ -48,7 +48,7 @@ def handle_response(response):
     [print(i) for i in res['media']]
     exclude = [1533617607076610048, 1482870401403428867]
     if len(res['media']) > 0 and res['rules'][0] not in exclude:
-        dl.dl.local_dl(res['id'], res['media'])
+        local_dl(res['id'], res['media'])
 
 
 class stream_parse(tweepy.StreamingClient):
