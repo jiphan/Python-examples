@@ -2,15 +2,22 @@ import tweepy
 import twitter
 import traceback
 import subprocess
+import os
+script_dir = os.path.dirname(__file__)
 
 
-def local_dl(urls):
-    dl = '../aria2c.exe'
+def local_dl(id, urls):
+    exec = '../../aria2c.exe'
+    folder = '../../dl/'
+
     subprocess.run([
-        dl, urls,
-        '-d', '../dl',
+        script_dir + exec, ' '.join(urls),
+        '-d', script_dir + folder,
         '-q'
     ])
+
+    with open(script_dir + folder + '/log.txt', 'a') as f:
+        f.write(f'{id} ' + ' '.join([i.split('/')[-1] for i in urls]))
 
 
 def parse_tweet(response):
@@ -21,7 +28,7 @@ def parse_tweet(response):
         mm = [media[m].url for m in response.data['attachments']['media_keys']]
         if None in mm:
             fallback = twitter.lookup_fallback([response.data['id']])
-            mm = fallback[str(response.data['id'])]
+            mm = [fallback[str(response.data['id'])]['media']]
     except:
         mm = []
 
@@ -35,20 +42,21 @@ def parse_tweet(response):
     }
 
 
+def handle_response(response):
+    res = parse_tweet(response)
+    print(res['text'][:60])
+    [print(i) for i in res['media']]
+    exclude = [1533617607076610048, 1482870401403428867]
+    if len(res['media']) > 0 and res['rules'][0] not in exclude:
+        dl.dl.local_dl(res['id'], res['media'])
+
+
 class stream_parse(tweepy.StreamingClient):
     def on_connect(self):
         print('connect OK')
 
-    def on_tweet(self, tweet):
-        if 'testpost' in tweet.text:
-            self.disconnect()
-
     def on_response(self, response):
-        res = parse_tweet(response)
-        print(res['id'], res['user'], res['created_at'])
-        print(res['text'])
-        [print(i) for i in res['media']]
-        local_dl(' '.join(res['media']))
+        handle_response(response)
 
 
 def init(streaming_client):
@@ -95,4 +103,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    local_dl('test', ['https://pbs.twimg.com/media/FUq7eaEaAAANbWJ.jpg'])

@@ -17,12 +17,12 @@ client = tweepy.Client(
 
 def parse_client(tweets):
     # https://bit.ly/36aRBpA
-    media = {m["media_key"]: m for m in tweets.includes['media']}
     user = {u['id']: u for u in tweets.includes['users']}
 
     res = {}
     for t in tweets.data:
         try:
+            media = {m["media_key"]: m for m in tweets.includes['media']}
             mm = [media[m].url for m in t.data['attachments']['media_keys']]
         except:
             mm = []
@@ -111,7 +111,7 @@ def delete(tweet):
 
 
 def main():
-    tweets = [1533657639200010240]
+    tweets = [1534039528360423424]
     res = lookup(tweets)
 
     print('results:')
