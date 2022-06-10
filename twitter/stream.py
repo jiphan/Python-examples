@@ -3,27 +3,31 @@ import twitter
 import traceback
 import subprocess
 import os
+import datetime
 script_dir = os.path.dirname(__file__)
 
 
-def local_dl(id, urls):
-    if len(urls) == 0:
+def local_dl(res):
+    if len(res['media']) == 0:
         return
     exec = '../../aria2c.exe'
     folder = '../../dl/'
 
     subprocess.run([
-        script_dir + exec, ' '.join(urls),
-        '-d', script_dir + folder,
+        script_dir + exec, ' '.join(res['media']),
+        '-d', script_dir + folder + res['user'],
         '-q'
     ])
 
     with open(script_dir + folder + '/log.txt', 'a') as f:
-        f.write(f'{id} ' + ' '.join([i.split('/')[-1] for i in urls]))
+        f.write(
+            '\n' + res['user'] + ' ' +
+            res['id'] + ' ' +
+            ' '.join([i.split('/')[-1] for i in res['media']])
+        )
 
 
 def parse_tweet(response):
-    print(response.errors)
     user = {u['id']: u for u in response.includes['users']}
     try:
         media = {m["media_key"]: m for m in response.includes['media']}
@@ -46,19 +50,11 @@ def parse_tweet(response):
 
 def handle_response(response):
     res = parse_tweet(response)
-    print(res['text'][:60])
+    print(res['text'][:40], res['rules'][0], res['user'], )
     [print(i) for i in res['media']]
     exclude = [1533617607076610048, 1482870401403428867]
     if len(res['media']) > 0 and res['rules'][0] not in exclude:
-        local_dl(res['id'], res['media'])
-
-
-class stream_parse(tweepy.StreamingClient):
-    def on_connect(self):
-        print('connect OK')
-
-    def on_response(self, response):
-        handle_response(response)
+        local_dl(res)
 
 
 def init(streaming_client):
@@ -70,6 +66,21 @@ def init(streaming_client):
         tweet_fields=["created_at"],
         threaded=True
     )
+
+
+class stream_parse(tweepy.StreamingClient):
+    def on_connect(self):
+        print('connect OK')
+
+    def on_disconnect(self):
+        print('on_disconnect')
+        init(self)
+
+    def on_response(self, response):
+        if len(response.errors) > 0:
+            print(response.errors['title'], datetime.datetime.now())
+        else:
+            handle_response(response)
 
 
 def main():
@@ -106,4 +117,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # local_dl('test', ['https://pbs.twimg.com/media/FUq7eaEaAAANbWJ.jpg'])
