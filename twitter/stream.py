@@ -13,16 +13,17 @@ def local_dl(res):
     exec = '../../aria2c.exe'
     folder = '../../dl/'
 
-    subprocess.run([
-        script_dir + exec, ' '.join(res['media']),
-        '-d', script_dir + folder + res['user'],
-        '-q'
-    ])
+    for media in res['media']:
+        subprocess.run([
+            script_dir + exec, media,
+            '-d', script_dir + folder + res['user'],
+            '-q'
+        ])
 
     with open(script_dir + folder + '/log.txt', 'a') as f:
         f.write(
             '\n' + res['user'] + ' ' +
-            res['id'] + ' ' +
+            str(res['id']) + ' ' +
             ' '.join([i.split('/')[-1] for i in res['media']])
         )
 
@@ -50,9 +51,12 @@ def parse_tweet(response):
 
 def handle_response(response):
     res = parse_tweet(response)
-    print(res['text'][:40], res['rules'][0], res['user'], )
-    [print(i) for i in res['media']]
-    exclude = [1533617607076610048, 1482870401403428867]
+    print(res['text'])
+    print(res['rules'][0], res['user'], )
+    exclude = [
+        '1533617607076610048',
+        '1482870401403428867'
+    ]
     if len(res['media']) > 0 and res['rules'][0] not in exclude:
         local_dl(res)
 
@@ -78,7 +82,7 @@ class stream_parse(tweepy.StreamingClient):
 
     def on_response(self, response):
         if len(response.errors) > 0:
-            print(response.errors['title'], datetime.datetime.now())
+            print(response.errors[0]['title'], datetime.datetime.now())
         else:
             handle_response(response)
 
