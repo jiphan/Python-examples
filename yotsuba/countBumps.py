@@ -1,13 +1,16 @@
 import datetime
 import time
 import yotsuba
-args = yotsuba.args
+import config
+import os
+script_dir = os.path.dirname(__file__)
+args = config.read_yaml(script_dir + '/config.yaml')
 
 
 def getBumps():
     """returns array of [time since last bump, page]"""
     threadList = []
-    for i in yotsuba.getCatalogFull():
+    for i in yotsuba.getCatalogFull(args.board):
         for j in i['threads']:
             try:
                 bump = j['last_replies'][-1]['time']

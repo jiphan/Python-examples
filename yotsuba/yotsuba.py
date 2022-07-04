@@ -1,9 +1,5 @@
-import re
 import requests
-import config
-import os
-script_dir = os.path.dirname(__file__)
-args = config.read_yaml(script_dir + '/config.yaml')
+import re
 
 
 def escapeHtml(unsafe):
@@ -23,47 +19,43 @@ def escapeHtml(unsafe):
     return safe
 
 
-def getCatalog():
+def getCatalog(board):
     threadList = []
     res = requests.get(
-        'https://a.4cdn.org/{}/catalog.json'
-        .format(args.board)
+        f'https://a.4cdn.org/{board}/catalog.json'
     )
     if res.status_code != 200:
         return threadList
     for page in res.json():
         for thread in page['threads']:
-            if (re.search(args.threadRegex, thread.get('com', ''))):
-                threadList.append(thread['no'])
+            threadList.append(thread['no'])
+
     return threadList
 
 
-def getCatalogFull():
+def getCatalogFull(board):
     res = requests.get(
-        'https://a.4cdn.org/{}/catalog.json'
-        .format(args.board)
+        f'https://a.4cdn.org/{board}/catalog.json'
     )
     if res.status_code != 200:
         return {}
     return res.json()
 
 
-def getArchive():
+def getArchive(board):
     res = requests.get(
-        'https://a.4cdn.org/{}/archive.json'
-        .format(args.board)
+        f'https://a.4cdn.org/{board}/archive.json'
     )
     return res.json()
 
 
-def getThread(thread):
+def getThread(board, thread):
     postList = []
     res = requests.get(
-        'https://a.4cdn.org/{}/thread/{}.json'
-        .format(args.board, thread)
+        f'https://a.4cdn.org/{board}/thread/{thread}.json'
     )
     op = res.json()['posts'][0]
-    print(res.status_code, op.get('sub', 'none'))
+    print(res.status_code, op['no'], op.get('sub', 'none'))
     for post in res.json()['posts']:
         postList.append(post)
     return postList
