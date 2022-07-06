@@ -54,8 +54,8 @@ def getThread(board, thread):
     res = requests.get(
         f'https://a.4cdn.org/{board}/thread/{thread}.json'
     )
-    op = res.json()['posts'][0]
-    print(res.status_code, op['no'], op.get('sub', 'none'))
+    # op = res.json()['posts'][0]
+    # print(res.status_code, op['no'], op.get('sub', 'none'))
     for post in res.json()['posts']:
         postList.append(post)
     return postList

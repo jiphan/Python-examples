@@ -30,6 +30,8 @@ def main():
                 fileList = []
                 for post in getPosts(thread['no']):
                     fileList += re.findall('\S*catbox\.moe\/\S*', post['com'])
+                if fileList != []:
+                    print(thread['no'], thread['sub'])
                 for file in fileList:
                     print(file, '\t', file.split('/')[-1])
                     subprocess.run([
