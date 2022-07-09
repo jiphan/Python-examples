@@ -34,11 +34,16 @@ def main():
                     print(thread['no'], thread['sub'])
                 for file in fileList:
                     print(file, '\t', file.split('/')[-1])
+                    folder = '../../dl/catbox'
                     subprocess.run([
                         script_dir + '../../aria2c.exe', file,
-                        '-d', script_dir + '../../dl/' + 'catbox',
+                        '-d', script_dir + folder,
                         '-q'
                     ])
+                    with open(script_dir + folder + '/log.txt', 'a') as f:
+                        f.write(
+                            '\n' + file
+                        )
 
 
 if __name__ == '__main__':
