@@ -101,7 +101,10 @@ def main():
                 last = timestamp[1:3]
             print(line + '\t' + timestamp)
             time.sleep(15 * 60)
-            arr = getBumps()
+            try:
+                arr = getBumps()
+            except:
+                print('connection error probably')
 
 
 if __name__ == '__main__':

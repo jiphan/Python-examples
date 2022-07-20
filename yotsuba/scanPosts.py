@@ -29,7 +29,8 @@ def main():
             if re.search(args.threadRegex, thread.get('com', '')):
                 fileList = []
                 for post in getPosts(thread['no']):
-                    fileList += re.findall('\S*catbox\.moe\/\S*', post['com'])
+                    fileList += re.findall(
+                        '\S*litter\.catbox\.moe\/\S*', post['com'])
                 if fileList != []:
                     print(thread['no'], thread['sub'])
                 for file in fileList:
@@ -48,5 +49,8 @@ def main():
 
 if __name__ == '__main__':
     while True:
-        main()
+        try:
+            main()
+        except:
+            print('connection error probably')
         time.sleep(int(args.refresh) * 60)
